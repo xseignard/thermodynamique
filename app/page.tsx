@@ -115,10 +115,7 @@ const Home = () => {
     dispatch({ type: "SET_ROI", payload: roi });
   };
   return (
-    <main
-      className="flex min-h-screen flex-col w-4/12 p-4 gap-8"
-      style={{ maxWidth: 450 }}
-    >
+    <main className="flex min-h-screen flex-col w-full md:max-w-md max-w-full p-4 gap-8">
       <form className="flex flex-col items-start gap-4" onSubmit={handleSubmit}>
         <Input
           label="Volume ballon"
@@ -186,11 +183,11 @@ const Home = () => {
           <h2>Résultats</h2>
           <div className="flex flex-row justify-between items-center w-full">
             <span>Chauffe eau classique:</span>
-            <span>{state.coutElec}€</span>
+            <span>{state.coutElec}€/an</span>
           </div>
           <div className="flex flex-row justify-between items-center w-full">
             <span>Chauffe eau thermodynamique:</span>
-            <span>{state.coutThermo}€</span>
+            <span>{state.coutThermo}€/an</span>
           </div>
           <div className="flex flex-row justify-between items-center w-full">
             <span>Retour sur investissement:</span>
