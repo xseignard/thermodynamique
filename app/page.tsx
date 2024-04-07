@@ -133,33 +133,33 @@ const Home = () => {
     <main className="flex min-h-screen flex-col w-full md:max-w-md max-w-full p-4 gap-8">
       <form className="flex flex-col items-start gap-4" onSubmit={handleSubmit}>
         <Input
-          label="Volume ballon"
+          label="Volume ballon (L)"
           initialValue={state.volume}
           onChange={(value) => dispatch({ type: "SET_VOLUME", payload: value })}
         />
         <Input
-          label="T° eau chaude"
+          label="T° eau chaude (°C)"
           initialValue={state.eauChaude}
           onChange={(value) =>
             dispatch({ type: "SET_EAU_CHAUDE", payload: value })
           }
         />
         <Input
-          label="T° eau froide"
+          label="T° eau froide (°C)"
           initialValue={state.eauFroide}
           onChange={(value) =>
             dispatch({ type: "SET_EAU_FROIDE", payload: value })
           }
         />
         <Input
-          label="Eau consommée par jour"
+          label="Eau consommée par jour (L)"
           initialValue={state.eauConsommee}
           onChange={(value) =>
             dispatch({ type: "SET_EAU_CONSOMMEE", payload: value })
           }
         />
         <Input
-          label="Prix électricité"
+          label="Prix électricité (€/kWh)"
           initialValue={state.prixElec}
           step={0.01}
           onChange={(value) =>
@@ -167,20 +167,20 @@ const Home = () => {
           }
         />
         <Input
-          label="Cop"
+          label="COP"
           initialValue={state.cop}
           step={0.01}
           onChange={(value) => dispatch({ type: "SET_COP", payload: value })}
         />
         <Input
-          label="Prix ballon électrique"
+          label="Prix ballon électrique (€)"
           initialValue={state.prixBallonElec}
           onChange={(value) =>
             dispatch({ type: "SET_PRIX_BALLON_ELEC", payload: value })
           }
         />
         <Input
-          label="Prix ballon thermodynamique"
+          label="Prix ballon thermo (€)"
           initialValue={state.prixBallonThermo}
           onChange={(value) =>
             dispatch({ type: "SET_PRIX_BALLON_THERMO", payload: value })
