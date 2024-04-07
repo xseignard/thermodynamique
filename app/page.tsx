@@ -14,25 +14,35 @@ type FormState = {
   prixBallonThermo: number;
   coutElec?: number;
   coutThermo?: number;
-  roi?: number;
+  roi?: {
+    years: number;
+    months: number;
+  };
 };
 
-type Actions = {
-  type:
-    | "SET_FACTEUR_ELEC"
-    | "SET_VOLUME"
-    | "SET_EAU_CHAUDE"
-    | "SET_EAU_FROIDE"
-    | "SET_EAU_CONSOMMEE"
-    | "SET_PRIX_ELEC"
-    | "SET_COP"
-    | "SET_PRIX_BALLON_ELEC"
-    | "SET_PRIX_BALLON_THERMO"
-    | "SET_COUT_ELEC"
-    | "SET_COUT_THERMO"
-    | "SET_ROI";
-  payload: number;
-};
+type Actions =
+  | {
+      type:
+        | "SET_FACTEUR_ELEC"
+        | "SET_VOLUME"
+        | "SET_EAU_CHAUDE"
+        | "SET_EAU_FROIDE"
+        | "SET_EAU_CONSOMMEE"
+        | "SET_PRIX_ELEC"
+        | "SET_COP"
+        | "SET_PRIX_BALLON_ELEC"
+        | "SET_PRIX_BALLON_THERMO"
+        | "SET_COUT_ELEC"
+        | "SET_COUT_THERMO";
+      payload: number;
+    }
+  | {
+      type: "SET_ROI";
+      payload: {
+        years: number;
+        months: number;
+      };
+    };
 
 const reducer = (state: FormState, action: Actions) => {
   switch (action.type) {
@@ -111,8 +121,13 @@ const Home = () => {
     // ROI
     const deltaPrix = prixBallonThermo - prixBallonElec;
     const economieAnnuelle = cout - coutThermo;
-    const roi = parseFloat((deltaPrix / economieAnnuelle).toFixed(2));
-    dispatch({ type: "SET_ROI", payload: roi });
+    const roiFloat = parseFloat((deltaPrix / economieAnnuelle).toFixed(2));
+    const roiYears = Math.floor(roiFloat);
+    const roiMonths = Math.round((roiFloat - roiYears) * 12);
+    dispatch({
+      type: "SET_ROI",
+      payload: { years: roiYears, months: roiMonths },
+    });
   };
   return (
     <main className="flex min-h-screen flex-col w-full md:max-w-md max-w-full p-4 gap-8">
@@ -178,23 +193,27 @@ const Home = () => {
           Calcul
         </button>
       </form>
-      {state.coutElec !== undefined && state.coutThermo !== undefined && (
-        <div className="flex flex-col items-start gap-4">
-          <h2>Résultats</h2>
-          <div className="flex flex-row justify-between items-center w-full">
-            <span>Chauffe eau classique:</span>
-            <span>{state.coutElec}€/an</span>
+      {state.coutElec !== undefined &&
+        state.coutThermo !== undefined &&
+        state.roi && (
+          <div className="flex flex-col items-start gap-4">
+            <h2>Résultats</h2>
+            <div className="flex flex-row justify-between items-center w-full">
+              <span>Chauffe eau classique:</span>
+              <span>{state.coutElec}€/an</span>
+            </div>
+            <div className="flex flex-row justify-between items-center w-full">
+              <span>Chauffe eau thermodynamique:</span>
+              <span>{state.coutThermo}€/an</span>
+            </div>
+            <div className="flex flex-row justify-between items-center w-full">
+              <span>Retour sur investissement:</span>
+              <span>
+                {state.roi.years} ans, {state.roi.months} mois
+              </span>
+            </div>
           </div>
-          <div className="flex flex-row justify-between items-center w-full">
-            <span>Chauffe eau thermodynamique:</span>
-            <span>{state.coutThermo}€/an</span>
-          </div>
-          <div className="flex flex-row justify-between items-center w-full">
-            <span>Retour sur investissement:</span>
-            <span>{state.roi} ans</span>
-          </div>
-        </div>
-      )}
+        )}
     </main>
   );
 };
