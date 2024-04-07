@@ -1,113 +1,230 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { SyntheticEvent, useReducer } from "react";
+
+type FormState = {
+  facteurElec: number;
+  volume: number;
+  eauChaude: number;
+  eauFroide: number;
+  eauConsommee: number;
+  prixElec: number;
+  cop: number;
+  prixBallonElec: number;
+  prixBallonThermo: number;
+  coutElec?: number;
+  coutThermo?: number;
+  roi?: number;
+};
+
+type Actions = {
+  type:
+    | "SET_FACTEUR_ELEC"
+    | "SET_VOLUME"
+    | "SET_EAU_CHAUDE"
+    | "SET_EAU_FROIDE"
+    | "SET_EAU_CONSOMMEE"
+    | "SET_PRIX_ELEC"
+    | "SET_COP"
+    | "SET_PRIX_BALLON_ELEC"
+    | "SET_PRIX_BALLON_THERMO"
+    | "SET_COUT_ELEC"
+    | "SET_COUT_THERMO"
+    | "SET_ROI";
+  payload: number;
+};
+
+const reducer = (state: FormState, action: Actions) => {
+  switch (action.type) {
+    // inputs
+    case "SET_FACTEUR_ELEC":
+      return { ...state, facteurElec: action.payload };
+    case "SET_VOLUME":
+      return { ...state, volume: action.payload };
+    case "SET_EAU_CHAUDE":
+      return { ...state, eauChaude: action.payload };
+    case "SET_EAU_FROIDE":
+      return { ...state, eauFroide: action.payload };
+    case "SET_EAU_CONSOMMEE":
+      return { ...state, eauConsommee: action.payload };
+    case "SET_PRIX_ELEC":
+      return { ...state, prixElec: action.payload };
+    case "SET_COP":
+      return { ...state, cop: action.payload };
+    case "SET_PRIX_BALLON_ELEC":
+      return { ...state, prixBallonElec: action.payload };
+    case "SET_PRIX_BALLON_THERMO":
+      return { ...state, prixBallonThermo: action.payload };
+
+    // outputs
+    case "SET_COUT_ELEC":
+      return { ...state, coutElec: action.payload };
+    case "SET_COUT_THERMO":
+      return { ...state, coutThermo: action.payload };
+    case "SET_ROI":
+      return { ...state, roi: action.payload };
+    default:
+      return state;
+  }
+};
+
+const Home = () => {
+  const [state, dispatch] = useReducer(reducer, {
+    facteurElec: 1162,
+    volume: 150,
+    eauChaude: 60,
+    eauFroide: 12,
+    eauConsommee: 150,
+    prixElec: 0.2068,
+    cop: 3.2,
+    prixBallonElec: 600,
+    prixBallonThermo: 2000,
+  });
+
+  const handleSubmit = (e: SyntheticEvent) => {
+    e.preventDefault();
+    const {
+      facteurElec,
+      volume,
+      eauChaude,
+      eauFroide,
+      eauConsommee,
+      prixElec,
+      cop,
+      prixBallonElec,
+      prixBallonThermo,
+    } = state;
+    // Température de l'eau avant chauffe
+    const proportionChaude = (volume - eauConsommee) / volume;
+    const proportionFroide = eauConsommee / volume;
+    const tempAvantChauffe =
+      eauChaude * proportionChaude + eauFroide * proportionFroide;
+    // Delta chauffe
+    const deltaChauffe = eauChaude - tempAvantChauffe;
+    // Energie nécessaire chauffe eau classique
+    const energie = deltaChauffe * volume * facteurElec * 365;
+    // Coût annuel
+    const cout = parseFloat(((energie / (1000 * 1000)) * prixElec).toFixed(2));
+    dispatch({ type: "SET_COUT_ELEC", payload: cout });
+    const coutThermo = parseFloat((cout / cop).toFixed(2));
+    dispatch({ type: "SET_COUT_THERMO", payload: coutThermo });
+    // ROI
+    const deltaPrix = prixBallonThermo - prixBallonElec;
+    const economieAnnuelle = cout - coutThermo;
+    const roi = parseFloat((deltaPrix / economieAnnuelle).toFixed(2));
+    dispatch({ type: "SET_ROI", payload: roi });
+  };
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+    <main className="flex min-h-screen flex-col w-4/12 p-4 gap-8">
+      <form className="flex flex-col items-start gap-4" onSubmit={handleSubmit}>
+        <Input
+          label="Volume ballon"
+          initialValue={state.volume}
+          onChange={(value) => dispatch({ type: "SET_VOLUME", payload: value })}
         />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
+        <Input
+          label="T° eau chaude"
+          initialValue={state.eauChaude}
+          onChange={(value) =>
+            dispatch({ type: "SET_EAU_CHAUDE", payload: value })
+          }
+        />
+        <Input
+          label="T° eau froide"
+          initialValue={state.eauFroide}
+          onChange={(value) =>
+            dispatch({ type: "SET_EAU_FROIDE", payload: value })
+          }
+        />
+        <Input
+          label="Eau consommée"
+          initialValue={state.eauConsommee}
+          onChange={(value) =>
+            dispatch({ type: "SET_EAU_CONSOMMEE", payload: value })
+          }
+        />
+        <Input
+          label="Prix électricité"
+          initialValue={state.prixElec}
+          step={0.01}
+          onChange={(value) =>
+            dispatch({ type: "SET_PRIX_ELEC", payload: value })
+          }
+        />
+        <Input
+          label="Cop"
+          initialValue={state.cop}
+          step={0.01}
+          onChange={(value) => dispatch({ type: "SET_COP", payload: value })}
+        />
+        <Input
+          label="Prix ballon électrique"
+          initialValue={state.prixBallonElec}
+          onChange={(value) =>
+            dispatch({ type: "SET_PRIX_BALLON_ELEC", payload: value })
+          }
+        />
+        <Input
+          label="Prix ballon thermodynamique"
+          initialValue={state.prixBallonThermo}
+          onChange={(value) =>
+            dispatch({ type: "SET_PRIX_BALLON_THERMO", payload: value })
+          }
+        />
+        <button
+          className="w-full h-12 bg-blue-500 text-white rounded"
+          type="submit"
         >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+          Calcul
+        </button>
+      </form>
+      {state.coutElec !== undefined && state.coutThermo !== undefined && (
+        <div className="flex flex-col items-start gap-4">
+          <h2>Résultats</h2>
+          <div className="flex flex-row justify-between items-center w-full">
+            <span>Chauffe eau classique:</span>
+            <span>{state.coutElec}€</span>
+          </div>
+          <div className="flex flex-row justify-between items-center w-full">
+            <span>Chauffe eau thermodynamique:</span>
+            <span>{state.coutThermo}€</span>
+          </div>
+          <div className="flex flex-row justify-between items-center w-full">
+            <span>Retour sur investissement:</span>
+            <span>{state.roi} ans</span>
+          </div>
+        </div>
+      )}
     </main>
   );
-}
+};
+
+const Input = ({
+  label,
+  initialValue,
+  step = 1,
+  onChange,
+}: {
+  label: string;
+  initialValue?: number;
+  step?: number;
+  onChange: (value: number) => void;
+}) => {
+  return (
+    <div className="flex flex-row justify-between items-center w-full">
+      <label htmlFor={label} className="pr-4">
+        {label}
+      </label>
+      <input
+        id={label}
+        type="number"
+        step={step}
+        value={initialValue}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="w-40 h-12 px-4 border border-gray-300 rounded"
+      />
+    </div>
+  );
+};
+
+export default Home;
