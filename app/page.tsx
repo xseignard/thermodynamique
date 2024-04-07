@@ -115,7 +115,10 @@ const Home = () => {
     dispatch({ type: "SET_ROI", payload: roi });
   };
   return (
-    <main className="flex min-h-screen flex-col w-4/12 p-4 gap-8">
+    <main
+      className="flex min-h-screen flex-col w-4/12 p-4 gap-8"
+      style={{ maxWidth: 450 }}
+    >
       <form className="flex flex-col items-start gap-4" onSubmit={handleSubmit}>
         <Input
           label="Volume ballon"
