@@ -86,7 +86,7 @@ const Home = () => {
     eauFroide: 12,
     eauConsommee: 150,
     prixElec: 0.2068,
-    cop: 3.2,
+    cop: 3.55,
     prixBallonElec: 600,
     prixBallonThermo: 2000,
   });
