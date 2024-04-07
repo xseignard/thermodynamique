@@ -140,7 +140,7 @@ const Home = () => {
           }
         />
         <Input
-          label="Eau consommée"
+          label="Eau consommée par jour"
           initialValue={state.eauConsommee}
           onChange={(value) =>
             dispatch({ type: "SET_EAU_CONSOMMEE", payload: value })
