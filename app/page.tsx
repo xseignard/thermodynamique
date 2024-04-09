@@ -119,9 +119,9 @@ const Home = () => {
     eauConsommee: 150,
     prixElec: 0.2068,
     cop: 3.55,
-    kwhAnnuelPlat: 1440,
-    prixBallonElec: 600,
-    prixBallonPlat: 750,
+    kwhAnnuelPlat: 1400,
+    prixBallonElec: 250,
+    prixBallonPlat: 400,
     prixBallonThermo: 2000,
   });
 
